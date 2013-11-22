@@ -1,0 +1,5 @@
+include LICENSE
+
+recursive-exclude protocoin *.pyc
+recursive-exclude protocoin *.pyo
+recursive-exclude docs *
