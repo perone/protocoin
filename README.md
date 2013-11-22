@@ -4,4 +4,4 @@ A pure Python bitcoin protocol implementation.
 
 ## Documentation
 
-	See the [Documentation](http://protocoin.readthedocs.org/).
+See the [documentation](http://protocoin.readthedocs.org/) for more information.
