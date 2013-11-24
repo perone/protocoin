@@ -7,7 +7,7 @@ Release v.0.2
 -------------------------------------------------------------------------------
 
 	* Implemented the GetAddr message command;
-	
+	* Closed a bug when the nodes were disconnecting;
 
 Release v.0.1
 -------------------------------------------------------------------------------
