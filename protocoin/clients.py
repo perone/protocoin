@@ -1,5 +1,6 @@
 from cStringIO import StringIO
 from .serializers import *
+from .exceptions import NodeDisconnectException
 import sys
 
 class BitcoinBasicClient(object):
@@ -44,6 +45,9 @@ class BitcoinBasicClient(object):
         message_header_serial = MessageHeaderSerializer()
         message_header = message_header_serial.deserialize(self.stream)
         payload = self.stream.read(message_header.length)
+
+        if message_header.length > 0 and not payload:
+            raise NodeDisconnectException("Node disconnected.")
 
         self.handle_message_header(message_header, payload)
 
@@ -90,7 +94,6 @@ class BitcoinBasicClient(object):
         in a receive/send loop."""
         while True:
             message_header, message = self.receive_message()
-            
             if not message:
                 continue
 
