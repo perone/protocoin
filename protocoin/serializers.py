@@ -505,6 +505,15 @@ class MemPoolSerializer(Serializer):
     """The serializer for the mempool command."""
     model_class = MemPool
 
+class GetAddr(object):
+    """The getaddr command."""
+    command = "getaddr"
+
+class GetAddrSerializer(Serializer):
+    """The serializer for the getaddr command."""
+    model_class = GetAddr
+
+
 MESSAGE_MAPPING = {
     "version": VersionSerializer,
     "verack": VerAckSerializer,
@@ -518,4 +527,5 @@ MESSAGE_MAPPING = {
     "block": BlockSerializer,
     "headers": HeaderVectorSerializer,
     "mempool": MemPoolSerializer,
+    "getaddr": GetAddrSerializer,
 }
