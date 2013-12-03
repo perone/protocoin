@@ -7,7 +7,8 @@ Release v.0.2
 -------------------------------------------------------------------------------
 
 	* Implemented the GetAddr message command;
-	
+	* Added the key/address management module;
+	* Added the utility module;	
 
 Release v.0.1
 -------------------------------------------------------------------------------
