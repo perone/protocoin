@@ -1,7 +1,7 @@
 from setuptools import setup
 import protocoin
 
-install_requirements = []
+install_requirements = ['ecdsa>=0.10']
 
 setup(
     name='protocoin',
