@@ -72,6 +72,9 @@ class BitcoinPublicKey(object):
         base58 = util.base58_encode(address_bignum)
         return '1' + base58
 
+    def __repr__(self):
+        return "<BitcoinPublicKey address=[%s]>" % self.to_address()
+
 class BitcoinPrivateKey(object):
     """This is a representation for Bitcoin private keys. In this
     class you'll find methods to import/export keys from multiple
@@ -128,5 +131,9 @@ class BitcoinPrivateKey(object):
         """
         hexkey = self.to_hex().upper()
         return BitcoinPublicKey.from_private_key(self.private_key)
+
+    def __repr__(self):
+        return "<BitcoinPrivateKey hexkey=[%s]>" % self.to_hex()
+
 
 
