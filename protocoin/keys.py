@@ -1,5 +1,7 @@
-import ecdsa
+import binascii
 import hashlib
+
+import ecdsa
 from . import util
 
 class BitcoinPublicKey(object):
@@ -92,6 +94,7 @@ class BitcoinPrivateKey(object):
                     When this parameter is ommited, the
                     OS entropy source is used.
     """
+    wif_prefix = '\x80'
 
     def __init__(self, hexkey=None, entropy=None):
         if hexkey:
@@ -114,6 +117,27 @@ class BitcoinPrivateKey(object):
         hexvalue = stringkey.encode("hex")
         return klass(hexvalue)
 
+    @classmethod
+    def from_wif(klass, wifkey):
+        """This method will create a new Private Key from a
+        WIF format string.
+
+        :param wifkey: The private key in WIF format
+        :returns: A new Private Key
+        """
+        value = util.base58_decode(wifkey)
+        hexkey = "%x" % value
+        checksum = hexkey[-4*2:].decode("hex")
+        key = hexkey[:-4*2].decode("hex")
+
+        shafirst = hashlib.sha256(key).digest()
+        shasecond = hashlib.sha256(shafirst).digest()
+
+        if shasecond[:4]!=checksum:
+            raise RuntimeError("Invalid checksum for the address.")
+
+        return klass(key[1:].encode("hex"))
+
     def to_hex(self):
         """This method will convert the Private Key to
         a hex string representation.
@@ -122,6 +146,29 @@ class BitcoinPrivateKey(object):
         """
         hexkey = self.private_key.to_string().encode("hex")
         return hexkey.upper()
+
+    def to_string(self):
+        """This method will convert the Private Key to
+        a string representation.
+
+        :returns: String representation of the Private Key
+        """
+        return self.private_key.to_string()
+
+    def to_wif(self):
+        """This method will export the Private Key to
+        WIF (Wallet Import Format).
+
+        :returns:: The Private Key in WIF format.
+        """
+        extendedkey = self.wif_prefix + self.to_string()
+        shafirst = hashlib.sha256(extendedkey).digest()
+        shasecond = hashlib.sha256(shafirst).digest()
+        checksum = shasecond[:4]
+        extendedkey = extendedkey + checksum
+        key_bignum = int('0x' + extendedkey.encode('hex'), 16)
+        base58 = util.base58_encode(key_bignum)
+        return base58
 
     def generate_public_key(self):
         """This method will create a new Public Key based on this
