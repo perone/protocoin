@@ -5,14 +5,13 @@ import sys
 
 class BitcoinBasicClient(object):
     """The base class for a Bitcoin network client, this class
-    implements utility functions to create your own class."""
+    implements utility functions to create your own class.
+
+    :param socket: a socket that supports the makefile()
+                   method.
+    """
 
     def __init__(self, socket):
-        """Constructor for the class.
-
-        :param socket: a socket that supports the makefile()
-                       method.
-        """
         self.socket = socket
         self.stream = socket.makefile("r+b", bufsize=0)
 

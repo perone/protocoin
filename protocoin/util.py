@@ -11,8 +11,8 @@ def base58_encode(address_bignum):
     """
     basedigits = []
     while address_bignum > 0:
-        address_bignum, rem = divmod (address_bignum, 58)
-        basedigits.insert(0, (base58_digits[rem]))
+        address_bignum, rem = divmod(address_bignum, 58)
+        basedigits.insert(0, base58_digits[rem])
     return ''.join(basedigits)
 
 def base58_decode(address):

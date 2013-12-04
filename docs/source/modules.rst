@@ -25,7 +25,6 @@ All modules listed below are under the "protocoin" module.
 
 :mod:`protocoin.keys` -- Keys and Address Management
 -------------------------------------------------------------------------------
-
 .. automodule:: protocoin.keys
     :members:
 
