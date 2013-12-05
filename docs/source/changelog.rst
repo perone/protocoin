@@ -6,9 +6,11 @@ releases of the project.
 Release v.0.2
 -------------------------------------------------------------------------------
 
+	* Bug fixes;
 	* Implemented the GetAddr message command;
 	* Added the key/address management module;
 	* Added the utility module;	
+	* Added a new example: creation of a brain wallet;
 
 Release v.0.1
 -------------------------------------------------------------------------------
