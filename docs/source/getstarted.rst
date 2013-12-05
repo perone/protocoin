@@ -246,5 +246,10 @@ or a new Public Key using the hex representation in the construction::
     hex_key = "E005459416BE7FDC13FA24BA2F2C0DE289F47495D6E94CF2DFBC9FB941CBB565"
     priv_key = keys.BitcoinPrivateKey(hex_key)
 
-
-
+If you have only the WIF format and you need to use it to create a new
+Private Key, you can use the :py:meth:`protocoin.keys.BitcoinPrivateKey.from_wif`
+method to import it and then create a new Private Key object like in
+the example below::
+    
+    priv_key_wif = "5KWwtPkCodUs9WfbrSjzjLqnfbohABUAuLs3NpdxLqi4U6MjuKC"
+    priv_key = BitcoinPrivateKey.from_wif(priv_key_wif)
