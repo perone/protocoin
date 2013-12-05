@@ -88,8 +88,7 @@ Creating your own brain wallet algorithm
 .. note:: A brainwallet refers to the concept of storing Bitcoins in
           one's own mind by memorization of a passphrase. As long as the passphrase is not
           recorded anywhere, the Bitcoins can be thought of as existing nowhere except in
-          the mind of the holder. If a brainwallet is forgotten or the person dies or is
-          permanently incapacitated, the Bitcoins are lost forever.
+          the mind of the holder. 
           -- *Bitcoin Wiki*
 
 The process to create a brain wallet is to use a deterministic random seed based
@@ -111,7 +110,7 @@ for the generation of the Private Key. The Private Key and the
 Public Key will be always the same if you always use the same
 password.
 
-
 .. warning:: Remember that if you're going to use this method to generate
-             a key pair and you then forget the password, you'll lose
-             all your Bitcoins.
+             a key pair and the brain wallet password is forgotten then
+             the Bitcoins are lost forever. Remember to always create
+             backups (encrypted) of your wallet data.
