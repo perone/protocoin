@@ -14,11 +14,12 @@ Protocoin uses a simple architecture of classes representing the data
 to be serialized and also classes representing the types of the fields
 to be serialized.
 
-Protocoin is organized in three submodules:
+Protocoin is organized in four main submodules:
 
     * :py:mod:`protocoin.fields`
     * :py:mod:`protocoin.serializers`
     * :py:mod:`protocoin.clients`
+    * :py:mod:`protocoin.keys`
 
 Each module structure is described in the next sections.
 
@@ -185,3 +186,70 @@ with the VerAck command message too. See an example of the use::
 In the example above, the handshake is done before entering the message
 loop.
 
+Bitcoin Keys -- Creating, exporting/importing and conversions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The :py:mod:`protocoin.keys` module contains classes to represent and
+handle Bitcoin Private Keys as well Public Keys. The two main classes
+in this module are :py:class:`protocoin.keys.BitcoinPublicKey` and
+:py:class:`protocoin.keys.BitcoinPrivateKey`. These classes contain
+methods to generate new key pairs (Private and Public), to convert
+the keys into Bitcoin addresses or Bitcoin WIF (Wallet Import Format)
+and to import keys from different formats.
+
+Creating Private Keys and Public Keys
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+In order to create a new Private Key, you only need to instantiate the
+:py:class:`protocoin.keys.BitcoinPrivateKey` class without any parameter::
+
+    from protocoin import keys
+    priv_key = keys.BitcoinPrivateKey()
+    print priv_key
+
+The example above, will create a new Private Key called `priv_key` and will
+output the string representation of the Private Key in hex::
+
+    <BitcoinPrivateKey hexkey=[E005459416BE7FDC13FA24BA2F2C0DE289F47495D6E94CF2DFBC9FB941CBB565]>
+
+You can now use this generated Private Key to create your Public Key like in
+the example below::
+
+    from protocoin import keys
+    priv_key = keys.BitcoinPrivateKey()
+    pub_key = priv_key.generate_public_key()
+    print pub_key
+
+This example will output::
+
+    <BitcoinPublicKey address=[19eQMjBSeeo8fhCRPEVCfnauhsCFVGgV6H]>
+
+Which is the Bitcoin address for the Public Key. You can also convert
+the Public Key to hext format using the method
+:py:meth:`protocoin.keys.BitcoinPublicKey.to_hex`.
+
+Importing and Exporting Keys
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+You can also export a Private Key into the WIF (Wallet Import Format, used by
+wallets to import Private Keys)::
+
+    from protocoin import keys
+    priv_key = keys.BitcoinPrivateKey()
+    print priv_key.to_wif()
+
+In this case, the output will be::
+
+    5KWwtPkCodUs9WfbrSjzjLqnfbohABUAuLs3NpdxLqi4U6MjuKC
+
+Which is the Private Key in the WIF format. You can also create a new Private Key
+or a new Public Key using the hex representation in the construction::
+
+    from protocoin import keys
+    hex_key = "E005459416BE7FDC13FA24BA2F2C0DE289F47495D6E94CF2DFBC9FB941CBB565"
+    priv_key = keys.BitcoinPrivateKey(hex_key)
+
+If you have only the WIF format and you need to use it to create a new
+Private Key, you can use the :py:meth:`protocoin.keys.BitcoinPrivateKey.from_wif`
+method to import it and then create a new Private Key object like in
+the example below::
+    
+    priv_key_wif = "5KWwtPkCodUs9WfbrSjzjLqnfbohABUAuLs3NpdxLqi4U6MjuKC"
+    priv_key = BitcoinPrivateKey.from_wif(priv_key_wif)
