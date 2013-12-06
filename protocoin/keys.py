@@ -15,7 +15,7 @@ class BitcoinPublicKey(object):
     key_prefix = '\x04'
 
     def __init__(self, hexkey):
-        stringkey = hexkey.decode("hex")
+        stringkey = hexkey.decode("hex")[1:]
         self.public_key = ecdsa.VerifyingKey.from_string(stringkey,
             curve=ecdsa.SECP256k1)
     
@@ -46,6 +46,7 @@ class BitcoinPublicKey(object):
         :returns: Hex string representation of the public key
         """
         hexkey = self.public_key.to_string().encode("hex")
+        print len(self.public_key.to_string())
         return self.key_prefix.encode("hex") + hexkey.upper()
 
     def to_address(self):
