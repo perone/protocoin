@@ -46,7 +46,6 @@ class BitcoinPublicKey(object):
         :returns: Hex string representation of the public key
         """
         hexkey = self.public_key.to_string().encode("hex")
-        print len(self.public_key.to_string())
         return self.key_prefix.encode("hex") + hexkey.upper()
 
     def to_address(self):
