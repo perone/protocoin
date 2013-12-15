@@ -98,8 +98,6 @@ class PrimaryField(Field):
         """
         data_size = struct.calcsize(self.datatype)
         data = stream.read(data_size)
-        if not data:
-            raise NodeDisconnectException("Node disconnected.")
         return struct.unpack(self.datatype, data)[0]
 
     def serialize(self):
@@ -157,8 +155,6 @@ class FixedStringField(Field):
 
     def deserialize(self, stream):
         data = stream.read(self.length)
-        if not data:
-            raise NodeDisconnectException("Node disconnected.")
         return data.split("\x00", 1)[0]
 
     def serialize(self):
@@ -245,11 +241,7 @@ class IPv4AddressField(Field):
 
     def deserialize(self, stream):
         unused_reserved = stream.read(12)
-        if not unused_reserved:
-            raise NodeDisconnectException("Node disconnected.")
         addr = stream.read(4)
-        if not addr:
-            raise NodeDisconnectException("Node disconnected.")
         return socket.inet_ntoa(addr)
 
     def serialize(self):
@@ -265,24 +257,15 @@ class VariableIntegerField(Field):
 
     def deserialize(self, stream):
         int_id_raw = stream.read(struct.calcsize("<B"))
-        if not int_id_raw:
-            raise NodeDisconnectException("Node disconnected.")
-
         int_id = struct.unpack("<B", int_id_raw)[0]
         if int_id == 0xFD:
             data = stream.read(2)
-            if not data:
-                raise NodeDisconnectException("Node disconnected.")
             int_id = struct.unpack("<H", data)[0]
         if int_id == 0xFE:
             data = stream.read(4)
-            if not data:
-                raise NodeDisconnectException("Node disconnected.")
             int_id = struct.unpack("<I", data)[0]
         if int_id == 0xFF:
             data = stream.read(8)
-            if not data:
-                raise NodeDisconnectException("Node disconnected.")
             int_id = struct.unpack("<Q", data)[0]
         return int_id
 
@@ -308,8 +291,6 @@ class VariableStringField(Field):
     def deserialize(self, stream):
         string_length = self.var_int.deserialize(stream)
         string_data = stream.read(string_length)
-        if not string_data:
-            raise NodeDisconnectException("Node disconnected.")
         return string_data
 
     def serialize(self):
@@ -334,8 +315,6 @@ class Hash(Field):
         intvalue = 0
         for i in range(8):
             data = stream.read(data_size)
-            if not data:
-                raise NodeDisconnectException("Node disconnected.")
             val = struct.unpack(self.datatype, data)[0]
             intvalue += val << (i * 32)
         return intvalue

@@ -102,6 +102,10 @@ class MessageHeaderSerializer(Serializer):
     checksum = fields.UInt32LEField()
 
     @staticmethod
+    def calcsize():
+        return struct.calcsize("i12sii")
+
+    @staticmethod
     def calc_checksum(payload):
         """Calculate the checksum of the specified payload.
 

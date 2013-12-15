@@ -11,6 +11,7 @@ Release v.0.2
 	* Added the key/address management module;
 	* Added the utility module;	
 	* Added a new example: creation of a brain wallet;
+	* Rewrite of the socket recv loop;
 
 Release v.0.1
 -------------------------------------------------------------------------------

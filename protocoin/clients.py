@@ -1,7 +1,7 @@
 from cStringIO import StringIO
 from .serializers import *
 from .exceptions import NodeDisconnectException
-import sys
+import os
 
 class BitcoinBasicClient(object):
     """The base class for a Bitcoin network client, this class
@@ -13,11 +13,11 @@ class BitcoinBasicClient(object):
 
     def __init__(self, socket):
         self.socket = socket
-        self.stream = socket.makefile("r+b", bufsize=0)
+        self.buffer = StringIO()
 
     def close_stream(self):
         """This method will close the socket stream."""
-        self.stream.close()
+        sel.socket.close()
 
     def handle_message_header(self, message_header, payload):
         """This method will be called for every message before the
@@ -40,14 +40,31 @@ class BitcoinBasicClient(object):
         """This method is called inside the loop() method to
         receive a message from the stream (socket) and then
         deserialize it."""
+
+        # Calculate the size of the buffer
+        self.buffer.seek(0, os.SEEK_END)
+        buffer_size = self.buffer.tell()
+
+        # Check if a complete header is present
+        if buffer_size < MessageHeaderSerializer.calcsize():
+            return
+
+        # Go to the beginning of the buffer
+        self.buffer.reset()
+
         message_model = None
         message_header_serial = MessageHeaderSerializer()
-        message_header = message_header_serial.deserialize(self.stream)
-        payload = self.stream.read(message_header.length)
+        message_header = message_header_serial.deserialize(self.buffer)
 
-        if message_header.length > 0 and not payload:
-            raise NodeDisconnectException("Node disconnected.")
+        total_length = MessageHeaderSerializer.calcsize() + message_header.length
 
+        # Incomplete message
+        if buffer_size < total_length:
+            self.buffer.seek(0, os.SEEK_END)
+            return
+
+        payload = self.buffer.read(message_header.length)
+        self.buffer = StringIO()
         self.handle_message_header(message_header, payload)
 
         payload_checksum = \
@@ -85,14 +102,28 @@ class BitcoinBasicClient(object):
         bin_data.write(message_header_serial.serialize(message_header))
         bin_data.write(bin_message)
 
-        self.stream.write(bin_data.getvalue())
+        self.socket.sendall(bin_data.getvalue())
         self.handle_send_message(message_header, message)
 
     def loop(self):
         """This is the main method of the client, it will enter
         in a receive/send loop."""
+
         while True:
-            message_header, message = self.receive_message()
+            data = self.socket.recv(1024*8)
+
+            if len(data) <= 0:
+                raise NodeDisconnectException("Node disconnected.")
+            
+            self.buffer.write(data)
+            data = self.receive_message()
+
+            # Check if the message is still incomplete to parse
+            if data is None:
+                continue
+
+            # Check for the header and message
+            message_header, message = data
             if not message:
                 continue
 
