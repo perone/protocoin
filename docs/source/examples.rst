@@ -35,6 +35,9 @@ name of each message received::
         client.handshake()
         client.loop()
 
+    if __name__ == "__main__":
+        run_main()
+
 The example above will output::
 
     <Block Version=[2] Timestamp=[Fri Nov 22 13:58:59 2013] Nonce=[1719395575] Hash=[0000000000000004b798ea6eb896bb3d39f1f1b19d285a0d48167e8661387e58] Tx Count=[232]>
