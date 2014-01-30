@@ -11,6 +11,8 @@ class BitcoinBasicClient(object):
                    method.
     """
 
+    coin = "bitcoin"
+
     def __init__(self, socket):
         self.socket = socket
         self.buffer = StringIO()
@@ -89,7 +91,7 @@ class BitcoinBasicClient(object):
         :param serializer: The serializar of the message
         """
         bin_data = StringIO()
-        message_header = MessageHeader()
+        message_header = MessageHeader(self.coin)
         message_header_serial = MessageHeaderSerializer()
 
         bin_message = serializer.serialize(message)

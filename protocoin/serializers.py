@@ -75,8 +75,8 @@ class Serializer(SerializerABC):
 
 class MessageHeader(object):
     """The header of all bitcoin messages."""
-    def __init__(self):
-        self.magic = fields.MAGIC_VALUES["main"]
+    def __init__(self, coin="bitcoin"):
+        self.magic = fields.MAGIC_VALUES[coin]
         self.command = "None"
         self.length = 0
         self.checksum = 0

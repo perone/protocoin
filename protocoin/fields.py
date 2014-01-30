@@ -11,10 +11,12 @@ PROTOCOL_VERSION = 60002
 
 #: The network magic values
 MAGIC_VALUES = {
-    "main": 0xD9B4BEF9,
-    "testnet": 0xDAB5BFFA,
-    "testnet3": 0x0709110B,
-    "amecoin": 0xFEB4BEF9,
+    "bitcoin":          0xD9B4BEF9,
+    "bitcoin_testnet":  0xDAB5BFFA,
+    "bitcoin_testnet3": 0x0709110B,
+    "namecoin":         0xFEB4BEF9,
+    "litecoin":         0xDBB6C0FB,
+    "litecoin_testnet": 0xDCB7C1FC
 }
 
 #: The available services
