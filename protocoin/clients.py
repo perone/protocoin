@@ -19,7 +19,7 @@ class BitcoinBasicClient(object):
 
     def close_stream(self):
         """This method will close the socket stream."""
-        sel.socket.close()
+        self.socket.close()
 
     def handle_message_header(self, message_header, payload):
         """This method will be called for every message before the
