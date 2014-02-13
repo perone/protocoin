@@ -82,18 +82,18 @@ class BitcoinBasicClient(object):
 
         return (message_header, message_model)
 
-    def send_message(self, message, serializer):
+    def send_message(self, message):
         """This method will serialize the message using the
-        specified serializer and then it will send it
-        to the socket stream.
+        appropriate serializer based on the message command
+        and then it will send it to the socket stream.
 
         :param message: The message object to send
-        :param serializer: The serializar of the message
         """
         bin_data = StringIO()
         message_header = MessageHeader(self.coin)
         message_header_serial = MessageHeaderSerializer()
 
+        serializer = MESSAGE_MAPPING[message.command]()
         bin_message = serializer.serialize(message)
         payload_checksum = \
             MessageHeaderSerializer.calc_checksum(bin_message)
@@ -143,8 +143,7 @@ class BitcoinClient(BitcoinBasicClient):
         """This method will implement the handshake of the
         Bitcoin protocol. It will send the Version message."""
         version = Version()
-        version_serial = VersionSerializer()
-        self.send_message(version, version_serial)
+        self.send_message(version)
 
     def handle_version(self, message_header, message):
         """This method will handle the Version message and
@@ -155,8 +154,7 @@ class BitcoinClient(BitcoinBasicClient):
         :param message: The Version message
         """
         verack = VerAck()
-        verack_serial = VerAckSerializer()
-        self.send_message(verack, verack_serial)
+        self.send_message(verack)
 
     def handle_ping(self, message_header, message):
         """This method will handle the Ping message and then
@@ -167,6 +165,5 @@ class BitcoinClient(BitcoinBasicClient):
         :param message: The Ping message
         """
         pong = Pong()
-        pong_serial = PongSerializer()
         pong.nonce = message.nonce
-        self.send_message(pong, pong_serial)
+        self.send_message(pong)

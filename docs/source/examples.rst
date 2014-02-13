@@ -18,9 +18,8 @@ name of each message received::
 
         def handle_inv(self, message_header, message):
             getdata = GetData()
-            getdata_serial = GetDataSerializer()
             getdata.inventory = message.inventory
-            self.send_message(getdata, getdata_serial)
+            self.send_message(getdata)
 
         def handle_message_header(self, message_header, payload):
             print "Received message:", message_header.command
@@ -63,9 +62,8 @@ output::
 
         def handle_inv(self, message_header, message):
             getdata = GetData()
-            getdata_serial = GetDataSerializer()
             getdata.inventory = message.inventory
-            self.send_message(getdata, getdata_serial)
+            self.send_message(getdata)
 
     def run_main():
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
