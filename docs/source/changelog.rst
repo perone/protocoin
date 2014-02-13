@@ -13,6 +13,7 @@ Release v.0.2
 	* Added a new example: creation of a brain wallet;
 	* Rewrite of the socket recv loop;
 	* Fixed a bug in the socket closing;
+	* Improved the send_message() of the BitcoinBasicClient;
 
 Release v.0.1
 -------------------------------------------------------------------------------
