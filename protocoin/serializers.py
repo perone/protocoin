@@ -179,6 +179,7 @@ class Version(object):
         self.addr_from = IPv4Address()
         self.nonce = random.randint(0, 2**32-1)
         self.user_agent = "/Perone:0.0.1/"
+        self.start_height = 0
 
 class VersionSerializer(Serializer):
     """The version command serializer."""
@@ -190,6 +191,7 @@ class VersionSerializer(Serializer):
     addr_from = fields.NestedField(IPv4AddressSerializer)
     nonce = fields.UInt64LEField()
     user_agent = fields.VariableStringField()
+    start_height = fields.Int32LEField()
 
 class VerAck(object):
     """The version acknowledge (verack) command."""
