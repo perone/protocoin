@@ -519,6 +519,23 @@ class GetAddrSerializer(Serializer):
     """The serializer for the getaddr command."""
     model_class = GetAddr
 
+class GetBlocks(object):
+    """The getblocks command."""
+    command = "getblocks"
+
+    def __init__(self, hashes):
+        self.version = fields.PROTOCOL_VERSION
+        self.hash_count = len(hashes)
+        self.hash_stop = 0
+        self.block_hashes = hashes
+
+class GetBlocksSerializer(Serializer):
+    model_class = GetBlocks
+    version = fields.UInt32LEField()
+    hash_count = fields.VariableIntegerField()
+    block_hashes = fields.BlockLocator()
+    hash_stop = fields.Hash()
+
 
 MESSAGE_MAPPING = {
     "version": VersionSerializer,
@@ -534,4 +551,5 @@ MESSAGE_MAPPING = {
     "headers": HeaderVectorSerializer,
     "mempool": MemPoolSerializer,
     "getaddr": GetAddrSerializer,
+    "getblocks": GetBlocksSerializer,
 }
