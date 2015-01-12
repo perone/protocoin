@@ -329,3 +329,19 @@ class Hash(Field):
             bin_data.write(pack_data)
             hash_ >>= 32
         return bin_data.getvalue()
+
+class BlockLocator(Field):
+    """A block locator type used for getblocks and getheaders"""
+    datatype = "<I"
+
+    def parse(self, values):
+        self.values = values
+
+    def serialize(self):
+        bin_data = StringIO()
+        for hash_ in self.values:
+            for i in range(8):
+                pack_data = struct.pack(self.datatype, hash_ & 0xFFFFFFFF)
+                bin_data.write(pack_data)
+                hash_ >>= 32
+        return bin_data.getvalue()
