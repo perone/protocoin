@@ -263,10 +263,10 @@ class VariableIntegerField(Field):
         if int_id == 0xFD:
             data = stream.read(2)
             int_id = struct.unpack("<H", data)[0]
-        if int_id == 0xFE:
+        elif int_id == 0xFE:
             data = stream.read(4)
             int_id = struct.unpack("<I", data)[0]
-        if int_id == 0xFF:
+        elif int_id == 0xFF:
             data = stream.read(8)
             int_id = struct.unpack("<Q", data)[0]
         return int_id

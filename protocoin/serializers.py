@@ -395,10 +395,19 @@ class Tx(object):
             text = time.ctime(self.lock_time)
         return text
 
+    def calculate_hash(self):
+        """This method will calculate the hash of the transaction."""
+        hash_fields = ["version", "tx_in", "tx_out", "lock_time"]
+        serializer = TxSerializer()
+        bin_data = serializer.serialize(self, hash_fields)
+        h = hashlib.sha256(bin_data).digest()
+        h = hashlib.sha256(h).digest()
+        return h[::-1].encode("hex_codec")
+
     def __repr__(self):
-        return "<%s Version=[%d] Lock Time=[%s] TxIn Count=[%d] TxOut Count=[%d]>" \
+        return "<%s Version=[%d] Lock Time=[%s] TxIn Count=[%d] Hash=[%s] TxOut Count=[%d]>" \
             % (self.__class__.__name__, self.version, self._locktime_to_text(),
-                len(self.tx_in), len(self.tx_out))
+                len(self.tx_in), self.calculate_hash(), len(self.tx_out))
 
 class TxSerializer(Serializer):
     """The transaction serializer."""
