@@ -3,6 +3,57 @@ from .serializers import *
 from .exceptions import NodeDisconnectException
 import os
 
+
+class ProtocolBuffer(object):
+    def __init__(self):
+        self.buffer = StringIO()
+        self.header_size = MessageHeaderSerializer.calcsize()
+
+    def write(self, data):
+        self.buffer.write(data)
+
+    def receive_message(self):
+        """This method will attempt to extract a header and message.
+        It will return a tuple of (header, message) and set whichever
+        can be set so far (None otherwise).
+        """
+        # Calculate the size of the buffer
+        self.buffer.seek(0, os.SEEK_END)
+        buffer_size = self.buffer.tell()
+
+        # Check if a complete header is present
+        if buffer_size < self.header_size:
+            return (None, None)
+
+        # Go to the beginning of the buffer
+        self.buffer.reset()
+
+        message_model = None
+        message_header_serial = MessageHeaderSerializer()
+        message_header = message_header_serial.deserialize(self.buffer)
+        total_length = self.header_size + message_header.length
+
+        # Incomplete message
+        if buffer_size < total_length:
+            self.buffer.seek(0, os.SEEK_END)
+            return (message_header, None)
+
+        payload = self.buffer.read(message_header.length)
+        remaining = self.buffer.read()
+        self.buffer = StringIO()
+        self.buffer.write(remaining)
+        payload_checksum = MessageHeaderSerializer.calc_checksum(payload)
+
+        # Check if the checksum is valid
+        if payload_checksum != message_header.checksum:
+            raise RuntimeError("Bad message checksum")
+
+        if message_header.command in MESSAGE_MAPPING:
+            deserializer = MESSAGE_MAPPING[message_header.command]()
+            message_model = deserializer.deserialize(StringIO(payload))
+
+        return (message_header, message_model)
+
 class BitcoinBasicClient(object):
     """The base class for a Bitcoin network client, this class
     implements utility functions to create your own class.
@@ -15,7 +66,7 @@ class BitcoinBasicClient(object):
 
     def __init__(self, socket):
         self.socket = socket
-        self.buffer = StringIO()
+        self.buffer = ProtocolBuffer()
 
     def close_stream(self):
         """This method will close the socket stream."""
@@ -37,50 +88,6 @@ class BitcoinBasicClient(object):
         :param message: The message to be sent
         """
         pass
-
-    def receive_message(self):
-        """This method is called inside the loop() method to
-        receive a message from the stream (socket) and then
-        deserialize it."""
-
-        # Calculate the size of the buffer
-        self.buffer.seek(0, os.SEEK_END)
-        buffer_size = self.buffer.tell()
-
-        # Check if a complete header is present
-        if buffer_size < MessageHeaderSerializer.calcsize():
-            return
-
-        # Go to the beginning of the buffer
-        self.buffer.reset()
-
-        message_model = None
-        message_header_serial = MessageHeaderSerializer()
-        message_header = message_header_serial.deserialize(self.buffer)
-
-        total_length = MessageHeaderSerializer.calcsize() + message_header.length
-
-        # Incomplete message
-        if buffer_size < total_length:
-            self.buffer.seek(0, os.SEEK_END)
-            return
-
-        payload = self.buffer.read(message_header.length)
-        self.buffer = StringIO()
-        self.handle_message_header(message_header, payload)
-
-        payload_checksum = \
-            MessageHeaderSerializer.calc_checksum(payload)
-
-        # Check if the checksum is valid
-        if payload_checksum != message_header.checksum:
-            return (message_header, message_model)
-
-        if message_header.command in MESSAGE_MAPPING:
-            deserializer = MESSAGE_MAPPING[message_header.command]()
-            message_model = deserializer.deserialize(StringIO(payload))
-
-        return (message_header, message_model)
 
     def send_message(self, message):
         """This method will serialize the message using the
@@ -118,14 +125,11 @@ class BitcoinBasicClient(object):
                 raise NodeDisconnectException("Node disconnected.")
             
             self.buffer.write(data)
-            data = self.receive_message()
+            message_header, message = self.buffer.receive_message()
 
-            # Check if the message is still incomplete to parse
-            if data is None:
-                continue
+            if message_header is not None:
+                self.handle_message_header(message_header, data)
 
-            # Check for the header and message
-            message_header, message = data
             if not message:
                 continue
 
