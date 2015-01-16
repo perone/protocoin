@@ -76,7 +76,6 @@ class Serializer(SerializerABC):
 class SerializableMessage(object):
     def get_message(self, coin="bitcoin"):
         """Get the binary version of this message, complete with header."""
-        bin_data = StringIO()
         message_header = MessageHeader(coin)
         message_header_serial = MessageHeaderSerializer()
 
