@@ -81,14 +81,6 @@ class BitcoinBasicClient(object):
         """
         pass
 
-    def handle_send_message(self, message_header, message):
-        """This method will be called for every sent message.
-
-        :param message_header: The header of the message
-        :param message: The message to be sent
-        """
-        pass
-
     def send_message(self, message):
         """This method will serialize the message using the
         appropriate serializer based on the message command
@@ -96,23 +88,7 @@ class BitcoinBasicClient(object):
 
         :param message: The message object to send
         """
-        bin_data = StringIO()
-        message_header = MessageHeader(self.coin)
-        message_header_serial = MessageHeaderSerializer()
-
-        serializer = MESSAGE_MAPPING[message.command]()
-        bin_message = serializer.serialize(message)
-        payload_checksum = \
-            MessageHeaderSerializer.calc_checksum(bin_message)
-        message_header.checksum = payload_checksum
-        message_header.length = len(bin_message)
-        message_header.command = message.command
-
-        bin_data.write(message_header_serial.serialize(message_header))
-        bin_data.write(bin_message)
-
-        self.socket.sendall(bin_data.getvalue())
-        self.handle_send_message(message_header, message)
+        self.socket.sendall(message.get_message())
 
     def loop(self):
         """This is the main method of the client, it will enter

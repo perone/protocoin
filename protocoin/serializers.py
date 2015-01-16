@@ -73,6 +73,24 @@ class Serializer(SerializerABC):
             setattr(model, field_name, value)
         return model
 
+class SerializableMessage(object):
+    def get_message(self, coin="bitcoin"):
+        """Get the binary version of this message, complete with header."""
+        bin_data = StringIO()
+        message_header = MessageHeader(coin)
+        message_header_serial = MessageHeaderSerializer()
+
+        serializer = MESSAGE_MAPPING[self.command]()
+        bin_message = serializer.serialize(self)
+        payload_checksum = \
+            MessageHeaderSerializer.calc_checksum(bin_message)
+        message_header.checksum = payload_checksum
+        message_header.length = len(bin_message)
+        message_header.command = self.command
+
+        bin_header = message_header_serial.serialize(message_header)
+        return bin_header + bin_message
+
 class MessageHeader(object):
     """The header of all bitcoin messages."""
     def __init__(self, coin="bitcoin"):
@@ -168,7 +186,7 @@ class IPv4AddressTimestampSerializer(Serializer):
     ip_address = fields.IPv4AddressField()
     port = fields.UInt16BEField()
 
-class Version(object):
+class Version(SerializableMessage):
     """The version command."""
     command = "version"
     def __init__(self):
@@ -193,7 +211,7 @@ class VersionSerializer(Serializer):
     user_agent = fields.VariableStringField()
     start_height = fields.Int32LEField()
 
-class VerAck(object):
+class VerAck(SerializableMessage):
     """The version acknowledge (verack) command."""
     command = "verack"
 
@@ -201,7 +219,7 @@ class VerAckSerializer(Serializer):
     """The serializer for the verack command."""
     model_class = VerAck
 
-class Ping(object):
+class Ping(SerializableMessage):
     """The ping command, which should always be
     answered with a Pong."""
     command = "ping"
@@ -217,7 +235,7 @@ class PingSerializer(Serializer):
     model_class = Ping
     nonce = fields.UInt64LEField()
 
-class Pong(object):
+class Pong(SerializableMessage):
     """The pong command, usually returned when
     a ping command arrives."""
     command = "pong"
@@ -233,7 +251,7 @@ class PongSerializer(Serializer):
     model_class = Pong
     nonce = fields.UInt64LEField()
 
-class Inventory(object):
+class Inventory(SerializableMessage):
     """The Inventory representation."""
     def __init__(self):
         self.inv_type = fields.INVENTORY_TYPE["MSG_TX"]
@@ -257,7 +275,7 @@ class InventorySerializer(Serializer):
     inv_type = fields.UInt32LEField()
     inv_hash = fields.Hash()
 
-class InventoryVector(object):
+class InventoryVector(SerializableMessage):
     """A vector of inventories."""
     command = "inv"
 
@@ -279,7 +297,7 @@ class InventoryVectorSerializer(Serializer):
     model_class = InventoryVector
     inventory = fields.ListField(InventorySerializer)
 
-class AddressVector(object):
+class AddressVector(SerializableMessage):
     """A vector of addresses."""
     command = "addr"
 
@@ -373,7 +391,7 @@ class TxOutSerializer(Serializer):
     value = fields.Int64LEField()
     pk_script = fields.VariableStringField()
 
-class Tx(object):
+class Tx(SerializableMessage):
     """The main transaction representation, this object will
     contain all the inputs and outputs of the transaction."""
     command = "tx"
@@ -417,7 +435,7 @@ class TxSerializer(Serializer):
     tx_out = fields.ListField(TxOutSerializer)
     lock_time = fields.UInt32LEField()
 
-class BlockHeader(object):
+class BlockHeader(SerializableMessage):
     """The header of the block."""
     def __init__(self):
         self.version = 0
@@ -490,7 +508,7 @@ class BlockSerializer(Serializer):
     nonce = fields.UInt32LEField()
     txns = fields.ListField(TxSerializer)
 
-class HeaderVector(object):
+class HeaderVector(SerializableMessage):
     """The header only vector."""
     command = "headers"
 
@@ -512,7 +530,7 @@ class HeaderVectorSerializer(Serializer):
     model_class = HeaderVector
     headers = fields.ListField(BlockHeaderSerializer)
 
-class MemPool(object):
+class MemPool(SerializableMessage):
     """The mempool command."""
     command = "mempool"
 
@@ -520,7 +538,7 @@ class MemPoolSerializer(Serializer):
     """The serializer for the mempool command."""
     model_class = MemPool
 
-class GetAddr(object):
+class GetAddr(SerializableMessage):
     """The getaddr command."""
     command = "getaddr"
 
@@ -528,7 +546,7 @@ class GetAddrSerializer(Serializer):
     """The serializer for the getaddr command."""
     model_class = GetAddr
 
-class GetBlocks(object):
+class GetBlocks(SerializableMessage):
     """The getblocks command."""
     command = "getblocks"
 
