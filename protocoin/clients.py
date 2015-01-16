@@ -88,7 +88,7 @@ class BitcoinBasicClient(object):
 
         :param message: The message object to send
         """
-        self.socket.sendall(message.get_message())
+        self.socket.sendall(message.get_message(self.coin))
 
     def loop(self):
         """This is the main method of the client, it will enter
