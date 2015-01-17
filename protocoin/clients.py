@@ -1,6 +1,6 @@
 from cStringIO import StringIO
 from .serializers import *
-from .exceptions import NodeDisconnectException
+from .exceptions import NodeDisconnectException, InvalidMessageChecksum
 import os
 
 
