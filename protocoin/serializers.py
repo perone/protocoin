@@ -379,7 +379,7 @@ class Tx(object):
     command = "tx"
 
     def __init__(self):
-        self.version = 0
+        self.version = 1
         self.tx_in = []
         self.tx_out = []
         self.lock_time = 0
