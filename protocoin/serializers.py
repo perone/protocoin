@@ -341,7 +341,9 @@ class TxIn(object):
     def __init__(self):
         self.previous_output = None
         self.signature_script = "Empty"
-        self.sequence = 0
+        # See https://en.bitcoin.it/wiki/Protocol_specification#tx for definition.
+        # Basically, this field should always be UINT_MAX, i.e. int("ffffffff", 16)
+        self.sequence = 4294967295
 
     def __repr__(self):
         return "<%s Sequence=[%d]>" % \
