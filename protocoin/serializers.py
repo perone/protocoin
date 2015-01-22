@@ -472,7 +472,7 @@ class Block(BlockHeader):
         return len(self.txns)
 
     def __iter__(self):
-        return __iter__(self.txns)
+        return iter(self.txns)
 
     def __repr__(self):
         return "<%s Version=[%d] Timestamp=[%s] Nonce=[%d] Hash=[%s] Tx Count=[%d]>" % \
