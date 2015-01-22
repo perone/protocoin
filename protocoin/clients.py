@@ -1,6 +1,6 @@
 from cStringIO import StringIO
 from .serializers import *
-from .exceptions import NodeDisconnectException
+from .exceptions import NodeDisconnectException, InvalidMessageChecksum
 import os
 
 
@@ -46,7 +46,8 @@ class ProtocolBuffer(object):
 
         # Check if the checksum is valid
         if payload_checksum != message_header.checksum:
-            raise RuntimeError("Bad message checksum")
+            msg = "Bad checksum for command %s" % message_header.command
+            raise InvalidMessageChecksum(msg)
 
         if message_header.command in MESSAGE_MAPPING:
             deserializer = MESSAGE_MAPPING[message_header.command]()
