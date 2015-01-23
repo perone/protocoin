@@ -24,8 +24,9 @@ name of each message received::
         def handle_message_header(self, message_header, payload):
             print "Received message:", message_header.command
 
-        def handle_send_message(self, message_header, message):
-            print "Message sent:", message_header.command
+        def send_message(self, message):
+	    BitcoinClient.send_message(self, message)
+            print "Message sent:", message.command
 
     def run_main():
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
