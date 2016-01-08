@@ -28,7 +28,7 @@ class BitcoinPublicKey(object):
         :returns: a new public key
         """
         public_key = private_key.get_verifying_key()
-        hexkey = public_key.to_string().encode("hex")
+        hexkey = (klass.key_prefix + public_key.to_string()).encode("hex")
         return klass(hexkey)
 
     def to_string(self):
