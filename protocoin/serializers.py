@@ -6,10 +6,11 @@ from cStringIO import StringIO
 from collections import OrderedDict
 
 from . import fields
+from . import util
 
 class SerializerMeta(type):
     """The serializer meta class. This class will create an attribute
-    called '_fields' in each serializer with the ordered dict of 
+    called '_fields' in each serializer with the ordered dict of
     fields present on the subclasses.
     """
     def __new__(meta, name, bases, attrs):
@@ -140,17 +141,8 @@ class IPv4Address(object):
         self.ip_address = "0.0.0.0"
         self.port = 8333
 
-    def _services_to_text(self):
-        """Converts the services field into a textual
-        representation."""
-        services = []
-        for service_name, flag_mask in fields.SERVICES.iteritems():
-            if self.services & flag_mask:
-                services.append(service_name)
-        return services
-        
     def __repr__(self):
-        services = self._services_to_text()
+        services = utils.services_to_text(self.services)
         if not services:
             services = "No Services"
         return "<%s IP=[%s:%d] Services=%r>" % (self.__class__.__name__,
@@ -170,7 +162,7 @@ class IPv4AddressTimestamp(IPv4Address):
         self.timestamp = time.time()
 
     def __repr__(self):
-        services = self._services_to_text()
+        services = util.services_to_text(self.services)
         if not services:
             services = "No Services"
         return "<%s Timestamp=[%s] IP=[%s:%d] Services=%r>" % \

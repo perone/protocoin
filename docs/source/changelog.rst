@@ -3,13 +3,18 @@ Changelog
 In this section you'll find information about what's new in the newer
 releases of the project.
 
+Release v.0.3
+-------------------------------------------------------------------------------
+
+    * Improved support for displaying services advertised by version negotiation (thanks to `@jhart-r7 <https://github.com/jhart-r7>`_);
+
 Release v.0.2
 -------------------------------------------------------------------------------
 
     * Fixed a bug when the nodes were disconnecting;
     * Implemented the GetAddr message command;
     * Added the key/address management module;
-    * Added the utility module; 
+    * Added the utility module;
     * Added a new example: creation of a brain wallet;
     * Rewrite of the socket recv loop;
     * Fixed a bug in the socket closing;
